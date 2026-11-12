@@ -1,0 +1,33 @@
+FROM node:20-alpine
+
+
+WORKDIR /app
+
+
+# Copy dependency files
+COPY package*.json ./
+
+
+# Install dependencies
+RUN apk add --no-cache openssl
+RUN npm ci
+
+
+# Copy Prisma schema
+COPY prisma ./prisma
+
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+
+# Copy application source code
+COPY . .
+
+
+# Document application port
+EXPOSE 3000
+
+
+# Start Express server
+CMD ["node", "server.js"]
